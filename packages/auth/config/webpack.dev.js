@@ -6,26 +6,29 @@ const packageJSON = require("../package.json");
 
 const devConfig = {
   mode: "development",
+  // output: {
+  //   // filename: "[name].[contenthash].js",
+  //   publicPath: "http://localhost:8082/",
+  // },
   output: {
-    // filename: "[name].[contenthash].js",
-    publicPath: "http://localhost:8080/",
+    publicPath: "http://localhost:8084/",
   },
   devServer: {
-    port: 8080,
-    historyApiFallback: {
-      index: "index.html",
-    },
+    port: 8084,
+    historyApiFallback: true,
   },
   plugins: [
     new ModuleFederationPlugin({
-      name: "container",
-      remotes: {
-        marketing: "marketing@http://localhost:8081/remoteEntry.js",
-        auth: "auth@http://localhost:8084/remoteEntry.js",
+      name: "auth",
+      filename: "remoteEntry.js", // only who exposes required
+      exposes: {
+        // Internally its a alias name for src/index.ProductIndex will be used to fetch the file
+        "./AuthApp": "./src/bootstrap",
       },
-
-      // shared: ["react", "react-dom"],
       shared: packageJSON.dependencies,
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/index.html",
     }),
   ],
 };
